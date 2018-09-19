@@ -1,0 +1,12 @@
+sudo: required
+dist: trusty
+language: node_js
+node_js:
+  - "10"
+before_script:
+  - cp conf/default.json.example conf/default.json
+script: npm install
+cache:
+  npm: true
+  directories:
+    - "node_modules"
