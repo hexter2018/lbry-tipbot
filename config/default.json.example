@@ -1,13 +1,13 @@
 {
   "bot": {
-    "token": "discordbottoken",
+    "token": "NDkxNDQ4MDY0NDg2MTQ2MDUw.DoNbAQ.gzSExmayqQ6JL07R3EVnRdnnj4U",
     "prefix": "!",
     "debug": false
   },
-  "lbrycrd": {
-    "port": 9245,
-    "user": "lbry",
-    "pass": "lbry"
+  "parkingd": {
+    "port": 47774,
+    "user": "parkingcoinrpc",
+    "pass": "ChngMQYfUkDPnusjpKXWnGjgwzqrzjUbW5WwEgxdb5PC"
   },
-  "sandboxchannel": "#369896313082478594"
+  "sandboxchannel": "481827740589228033"
 }

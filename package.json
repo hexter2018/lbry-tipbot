@@ -25,11 +25,11 @@
   "devDependencies": {
     "prettier": "^1.12.1"
   },
-  "name": "lbry-tipbot",
-  "version": "0.0.4",
-  "description": "LBRYs tipbot for Discord",
+  "name": "parking-tipbot",
+  "version": "0.0.1",
+  "description": "Parking tipbot for Discord",
   "main": "app.js",
-  "repository": "https://github.com/lbryio/lbry-tipbot",
-  "author": "filipnyquist <filip@lbry.io>",
+  "repository": "https://github.com/hexter2018/parking-tipbot",
+  "author": "hexter2018",
   "license": "MIT"
 }

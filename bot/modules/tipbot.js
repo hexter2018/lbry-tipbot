@@ -4,8 +4,8 @@ const bitcoin = require('bitcoin');
 let config = require('config');
 let spamchannel = config.get('sandboxchannel');
 let regex = require('regex');
-let lbrycrdConfig = config.get('lbrycrd');
-const lbry = new bitcoin.Client(lbrycrdConfig);
+let parkingConfig = config.get('parkingd');
+const parkd = new bitcoin.Client(parkingConfig);
 const helpmsg = {
   embed: {
     description:
@@ -32,7 +32,7 @@ const helpmsg = {
 exports.commands = ['tip', 'multitip', 'roletip', 'tips'];
 exports.tip = {
   usage: '<subcommand>',
-  description: 'Tip a given user with an amount of LBC or perform wallet specific operations.',
+  description: 'Tip a given user with an amount of PARK or perform wallet specific operations.',
   process: async function(bot, msg, suffix) {
     let tipper = msg.author.id.replace('!', ''),
       words = msg.content
@@ -65,7 +65,7 @@ exports.tip = {
 
 exports.multitip = {
   usage: '<subcommand>',
-  description: 'Tip multiple users simultaneously for the same amount of LBC each.',
+  description: 'Tip multiple users simultaneously for the same amount of PARK each.',
   process: async function(bot, msg, suffix) {
     let tipper = msg.author.id.replace('!', ''),
       words = msg.content
@@ -90,7 +90,7 @@ exports.multitip = {
 
 exports.roletip = {
   usage: '<subcommand>',
-  description: 'Tip every user in a given role the same amount of LBC.',
+  description: 'Tip every user in a given role the same amount of PARK.',
   process: async function(bot, msg, suffix) {
     let tipper = msg.author.id.replace('!', ''),
       words = msg.content
@@ -134,11 +134,11 @@ function doHelp(message, helpmsg) {
 }
 
 function doBalance(message, tipper) {
-  lbry.getBalance(tipper, 1, function(err, balance) {
+  parkd.getBalance(tipper, 1, function(err, balance) {
     if (err) {
       message.reply('Error getting balance.').then(message => message.delete(5000));
     } else {
-      message.reply(`You have *${balance}* LBC`);
+      message.reply(`You have *${balance}* PARK`);
     }
   });
 }
@@ -166,11 +166,11 @@ function doWithdraw(message, tipper, words, helpmsg) {
     return;
   }
 
-  lbry.sendFrom(tipper, address, amount, function(err, txId) {
+  parkd.sendFrom(tipper, address, amount, function(err, txId) {
     if (err) {
       return message.reply(err.message).then(message => message.delete(5000));
     }
-    message.reply(`You withdrew ${amount} LBC to ${address}.
+    message.reply(`You withdrew ${amount} PARK to ${address}.
 ${txLink(txId)}`);
   });
 }
@@ -194,7 +194,7 @@ function doTip(bot, message, tipper, words, helpmsg, MultiorRole) {
   }
 
   if (message.mentions.users.first() && message.mentions.users.first().id) {
-    return sendLBC(bot, message, tipper, message.mentions.users.first().id.replace('!', ''), amount, prv, MultiorRole);
+    return sendPARK(bot, message, tipper, message.mentions.users.first().id.replace('!', ''), amount, prv, MultiorRole);
   }
   message.reply('Sorry, I could not find a user in your tip...');
 }
@@ -222,7 +222,7 @@ function doMultiTip(bot, message, tipper, words, helpmsg, MultiorRole) {
     return;
   }
   for (let i = 0; i < userIDs.length; i++) {
-    sendLBC(bot, message, tipper, userIDs[i].toString(), amount, prv, MultiorRole);
+    sendPARK(bot, message, tipper, userIDs[i].toString(), amount, prv, MultiorRole);
   }
 }
 
@@ -239,14 +239,14 @@ function doRoleTip(bot, message, tipper, words, helpmsg, MultiorRole) {
   }
   let amount = getValidatedAmount(words[amountOffset]);
   if (amount == null) {
-    message.reply("I don't know how to tip that many LBC coins...").then(message => message.delete(10000));
+    message.reply("I don't know how to tip that many PARK coins...").then(message => message.delete(10000));
     return;
   }
   if (message.mentions.roles.first().id) {
     if (message.mentions.roles.first().members.first().id) {
       let userIDs = message.mentions.roles.first().members.map(member => member.user.id.replace('!', ''));
       for (let i = 0; i < userIDs.length; i++) {
-        sendLBC(bot, message, tipper, userIDs[i], amount, prv, MultiorRole);
+        sendPARK(bot, message, tipper, userIDs[i], amount, prv, MultiorRole);
       }
     } else {
       return message.reply('Sorry, I could not find any users to tip in that role...').then(message => message.delete(10000));
@@ -275,12 +275,12 @@ function findUserIDsAndAmount(message, words, prv) {
   return [idList, amount];
 }
 
-function sendLBC(bot, message, tipper, recipient, amount, privacyFlag, MultiorRole) {
+function sendPARK(bot, message, tipper, recipient, amount, privacyFlag, MultiorRole) {
   getAddress(recipient.toString(), function(err, address) {
     if (err) {
       message.reply(err.message).then(message => message.delete(5000));
     } else {
-      lbry.sendFrom(tipper, address, Number(amount), 1, null, null, function(err, txId) {
+      parkd.sendFrom(tipper, address, amount, function(err, txId) {
         if (err) {
           message.reply(err.message).then(message => message.delete(5000));
         } else {
@@ -289,16 +289,16 @@ function sendLBC(bot, message, tipper, recipient, amount, privacyFlag, MultiorRo
 DM me with \`${message.content.split(' ', 1)[0]}\` for command specific instructions or with \`!tips\` for all available commands`;
           if (privacyFlag) {
             let usr = message.guild.members.find('id', recipient).user;
-            let authmsg = `You have just privately tipped @${usr.tag} ${amount} LBC.
+            let authmsg = `You have just privately tipped @${usr.tag} ${amount} PARK.
 ${tx}${msgtail}`;
             message.author.send(authmsg);
             if (message.author.id !== message.mentions.users.first().id) {
-              let recipientmsg = `You have just been privately tipped ${amount} LBC by @${message.author.tag}.
+              let recipientmsg = `You have just been privately tipped ${amount} PARK by @${message.author.tag}.
 ${tx}${msgtail}`;
               usr.send(recipientmsg);
             }
           } else {
-            let generalmsg = `Wubba lubba dub dub! <@${tipper}> tipped <@${recipient}> ${amount} LBC.
+            let generalmsg = `You have just been tipped! <@${tipper}> tipped <@${recipient}> ${amount} PARK.
 ${tx}${msgtail}`;
             message.reply(generalmsg);
           }
@@ -309,13 +309,13 @@ ${tx}${msgtail}`;
 }
 
 function getAddress(userId, cb) {
-  lbry.getAddressesByAccount(userId, function(err, addresses) {
+  parkd.getAddressesByAccount(userId, function(err, addresses) {
     if (err) {
       cb(err);
     } else if (addresses.length > 0) {
       cb(null, addresses[0]);
     } else {
-      lbry.getNewAddress(userId, function(err, address) {
+      parkd.getNewAddress(userId, function(err, address) {
         if (err) {
           cb(err);
         } else {
@@ -332,12 +332,12 @@ function inPrivateOrBotSandbox(msg) {
 
 function getValidatedAmount(amount) {
   amount = amount.trim();
-  if (amount.toLowerCase().endsWith('lbc')) {
+  if (amount.toLowerCase().endsWith('park')) {
     amount = amount.substring(0, amount.length - 3);
   }
   return amount.match(/^[0-9]+(\.[0-9]+)?$/) ? amount : null;
 }
 
 function txLink(txId) {
-  return '<https://explorer.lbry.io/tx/' + txId + '>';
+  return '<https://explorer.parkcoin.club/#/' + txId + '>';
 }
