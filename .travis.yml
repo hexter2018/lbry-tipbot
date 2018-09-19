@@ -4,7 +4,7 @@ language: node_js
 node_js:
   - "10"
 before_script:
-  - cp conf/default.json.example conf/default.json
+  - cp config/default.json.example config/default.json
 script: npm install
 cache:
   npm: true
