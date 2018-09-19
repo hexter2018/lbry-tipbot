@@ -1,8 +1,8 @@
-# Bot for [LBRY's Discord](https://discord.gg/tgnNHf5)
+# Bot for [Parking Crypto's Discord](https://discord.gg/Pw642Tn)
 (This README will be updated along with bot updates)
 Features:
 
-- Tipbot for LBC. Responds to `!tip`.
+- Tipbot for PARK. Responds to `!tip`.
 - Dynamic plugin loading with permission support.
 
 
